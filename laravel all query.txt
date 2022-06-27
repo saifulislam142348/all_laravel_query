@@ -1,0 +1,97 @@
+  //select   
+    $users=DB::table('students')->select('name')->get();
+    //count 
+    $users=DB::table('students')->count();
+    
+    $users=DB::table('students')->select(DB::raw('count(*) as counts'))->get();
+    //search  student payment
+    $users=DB::table('payments')->whereRaw('amount > IF(student_id = 1, ?, 1)', [200])->get();
+  
+//just name select
+    $titles = DB::table('students')->pluck('name');
+});
+
+//chunk table divided
+DB::table('students')->orderBy('id')->chunk(2, function($titles){
+   
+  
+});
+
+DB::table('students')->orderBY('id')->lazy()->each( function($users){
+
+});
+ 
+
+$avg= DB::table('payments')->avg('amount');
+$users= DB::table('payments')->select('amount');
+//select raw add select
+$users= DB::table('students')->select('name');
+$addselect= $users->addSelect('department_id');
+
+
+//join
+$join=DB::table('students')->join('payments','students.id','=', 'payments.student_id')->select('students.*','payments.amount')->get();
+
+//id select payment
+$users = DB::table('payments')
+                    ->where('amount', '>', 500)
+                    ->orWhere($users, function($users){
+                        $users->where('student_id','=',1)->Where('amount','=',1000);
+
+                    });
+           //between         
+    $between= DB::table('payments')->whereBetween('amount', [500,1000])->get();
+    $between= DB::table('payments')->whereNotBetween('amount', [500,1000])->get();
+    $between= DB::table('payments')->whereIn('student_id', [1,7,8])->get();
+    $between= DB::table('payments')->whereNotIn('student_id', [1,7])->get();
+//exits
+    $users = DB::table('users')
+           ->whereExists(function ($query) { 
+               $query->select(DB::raw(1))
+                     ->from('students')
+                     ->whereColumn('students.user_id', 'users.id');
+                 
+                  
+           })
+           ->get();
+           //name multiple attributes select
+           $titles = DB::table('users')->pluck('name', 'email');
+         
+//asc desc
+           $users=DB::table('users')->orderBy('name', 'desc')->get();
+           $users=DB::table('users')->orderBy('name', 'asc')->get();
+
+           //lastest data show
+           $users=DB::table('users')->latest()->get();
+           //first data show
+           $users=DB::table('users')->first();
+           //randomly data show
+           $users=DB::table('users')->inRandomOrder();
+           $unorderedUsers = $users->reorder()->get();
+//total all student payment count 
+           $report = DB::table('payments')
+           ->selectRaw('count(id) as number_of_payments, student_id')
+           ->groupBy('student_id')
+           ->havingBetween('number_of_payments',[1,10])
+           ->get();
+          //skip take
+           $student= DB::table('students')->skip(1)->take(2)->get();
+           $student= DB::table('payments')->skip(1)->take(6)->get();
+           
+ 
+//one student total payment view
+           $users = DB::table('payments')
+             ->select(DB::raw('count(*) as user_count, student_id'))
+             ->where('student_id', '=', 1)
+             ->groupBy('student_id')
+             ->get();
+//500 taka payment how much student
+           $users = DB::table('payments')
+             ->select(DB::raw('count(*) as amount_count, amount'))
+             ->where('amount', '=', 500)
+             ->groupBy('amount')
+             ->get();
+         
+               //tax add 
+             $user= DB::table('payments')->selectRaw('amount* ? as tax', [1.11])->get();
+           dd($user);
